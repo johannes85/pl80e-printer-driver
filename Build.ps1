@@ -63,7 +63,7 @@ $inf2cat=Get-ChildItem -LiteralPath (Join-Path $PSScriptRoot 'tools\microsoft.wi
 if(-not $inf2cat) {throw 'Inf2Cat build tool is missing.'}
 & $inf2cat ("/driver:"+$release) /os:10_X64
 if($LASTEXITCODE -ne 0) {throw 'Release catalog generation failed.'}
-Compress-Archive -Path (Join-Path $release '*') -DestinationPath (Join-Path $PSScriptRoot 'dist\PL80E-Open-Source-0.1.0.14.zip') -Force
+Compress-Archive -Path (Join-Path $release '*') -DestinationPath (Join-Path $PSScriptRoot 'dist\PL80E-Open-Source-0.1.0.17.zip') -Force
 Write-Host "Release package: $release"
 
 # Independent DEV identity, including spool-directory filenames and hardware ID.

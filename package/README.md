@@ -14,6 +14,9 @@ which self signes it for the current machine it is installed on.
 
 Project code and scripts are available under the MIT license; see LICENSE.
 
+Author: Johannes Zinnau and (mostly) ChatGPT
+Project Page: https://github.com/johannes85/pl80e-printer-driver
+
 ## Install
 
 Extract the entire ZIP to a local folder. Open **64-bit Windows PowerShell as administrator**, change to that folder and run:

@@ -12,6 +12,9 @@ which is the printing of shipping labels.
 The provided release version isn't officially signed but can be installed with the provided install script,
 which self signes it for the current machine it is installed on.
 
+Author: Johannes Zinnau and (mostly) ChatGPT
+Project Page: https://github.com/johannes85/pl80e-printer-driver
+
 ## Requirements
 
 - Windows x64 with **64-bit PowerShell 7**.
