@@ -1,0 +1,12 @@
+tools/
+.zig-cache/
+zig-cache/
+build/
+dist/
+test-output/
+analysis/
+*.pfx
+*.p12
+*.key
+*.dpapi
+README_LONG.md

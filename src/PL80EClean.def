@@ -1,0 +1,22 @@
+LIBRARY PL80EClean
+EXPORTS
+    DrvEnableDriver
+    DrvDisableDriver
+    DrvQueryDriverInfo
+    DrvEnablePDEV
+    DrvCompletePDEV
+    DrvDisablePDEV
+    DrvEnableSurface
+    DrvDisableSurface
+    DrvStartDoc
+    DrvStartPage
+    DrvSendPage
+    DrvEndDoc
+    DrvResetPDEV
+    DrvDocumentPropertySheets
+    DrvDevicePropertySheets
+    DrvConvertDevMode
+    DrvDeviceCapabilities
+    DrvDriverEvent
+    DrvPrinterEvent
+    DrvDocumentEvent

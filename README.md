@@ -1,0 +1,89 @@
+# PL80E Open Source Driver
+
+The original POLONO PL80E printer driver (v4.1) has some serious problems with rasterizing the documents before printing.
+This results in mangeled text and wrong dimensions.
+
+I took the opportunity to test if ChatGPTs Codex is capable of generating a functioning open source driver for me,
+which it did successfully thanks to [REA](https://rea.tools/).
+
+I didn't review the code in depth, but the driver itself seems to work - at least for my usecase
+which is the printing of shipping labels.
+
+The provided release version isn't officially signed but can be installed with the provided install script,
+which self signes it for the current machine it is installed on.
+
+## Requirements
+
+- Windows x64 with **64-bit PowerShell 7**.
+- Internet access for the first download of the build tools.
+- The complete project source folder.
+
+You do not need to install Visual Studio, Zig or the Windows SDK manually.
+Building does not require administrator privileges or a connected printer.
+
+## 1. Open the project folder
+
+Download or clone the source, then open PowerShell 7 in the project folder.
+Alternatively, change to it:
+
+```powershell
+cd 'C:\path\to\PL80E-Open-Source'
+```
+
+Replace the example path with your actual project folder.
+
+## 2. Download the build tools
+
+Run this once:
+
+```powershell
+.\Prepare-BuildTools.ps1
+```
+
+This downloads Zig 0.13.0, the required MinGW-w64 headers, and Microsoft SDK/WDK
+build tools into `tools/`.
+
+## 3. Build the driver
+
+```powershell
+.\Build.ps1
+```
+
+The script builds both variants, runs the raster and driver-dialog tests, and
+creates the release catalog. Wait for all tests to pass and the script to finish.
+After changing the source, repeat this step; the tools do not need downloading again.
+
+## Build output
+
+| Output | Location |
+| --- | --- |
+| Release installer package | `dist/PL80E-Open-Source-<version>.zip` |
+| Unpacked release package | `dist/PL80E-Open-Source/` |
+| Development build | `dist/PL80E-Open-Source-DEV/` |
+
+The release ZIP contains the driver, installer, uninstaller, README and license
+notices. Extract it and follow its README to install as administrator. Its
+installer creates a local signing certificate and signs the catalog on the target PC.
+
+The development driver uses **PL80E Open Source (DEV)** and separate driver files,
+so it can coexist with the release. Build.ps1 does not sign it. For local DEV
+signing, run:
+
+```powershell
+.\Prepare-Signing.ps1
+```
+
+This creates the signed DEV package and a local development identity. It does
+not install the driver or trust the certificate. Keep `build/signing/` private.
+The installation scripts in the repository root target DEV; the scripts inside
+the release ZIP target the release.
+
+## Notes
+
+- If PowerShell blocks downloaded scripts, verify their source and review your
+  system's execution policy or ask your administrator.
+- Build tests do not print labels or install a driver.
+- Original project code and build scripts use the [MIT license](LICENSE).
+  Downloaded tools retain their own licenses.
+- [README_LONG.md](README_LONG.md) preserves the earlier development notes.
+  Historical names and paths there may refer to older versions.

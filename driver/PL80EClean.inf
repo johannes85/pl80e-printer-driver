@@ -1,0 +1,43 @@
+; Local development package. Prepare-Signing.ps1 generates a catalog and
+; signs it with the dedicated local development certificate (not WHQL).
+[Version]
+Signature="$Windows NT$"
+Class=Printer
+ClassGUID={4D36E979-E325-11CE-BFC1-08002BE10318}
+ClassVer=3.0
+Provider=%Provider%
+DriverVer=10/15/2026,0.1.0.17
+CatalogFile=PL80EClean.cat
+
+[Manufacturer]
+%Provider%=Models,NTamd64
+
+[Models.NTamd64]
+"PL80E Open Source"=Clean.Install,PL80EClean_LocalDevelopment
+
+[Clean.Install]
+CopyFiles=Clean.Files
+DataFile=PL80EClean.gpd
+DriverFile=PL80EClean.dll
+ConfigFile=PL80EClean.dll
+
+[PrinterPackageInstallation.amd64]
+PackageAware=TRUE
+
+[Clean.Files]
+PL80EClean.dll
+PL80EClean.gpd
+
+[DestinationDirs]
+Clean.Files=66000
+
+[SourceDisksNames]
+1=%Disk%,,,
+
+[SourceDisksFiles]
+PL80EClean.dll=1
+PL80EClean.gpd=1
+
+[Strings]
+Provider="PL80E Open Source Project"
+Disk="PL80E Open Source development driver"

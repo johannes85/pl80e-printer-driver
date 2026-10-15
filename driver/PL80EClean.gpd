@@ -1,0 +1,89 @@
+*GPDSpecVersion: "1.0"
+*GPDFileVersion: "0.1"
+*GPDFileName: "PL80EClean.gpd"
+*ModelName: "PL80E Open Source"
+*Include: "StdNames.gpd"
+*ResourceDLL: "unires.dll"
+*MasterUnits: PAIR(2030, 2030)
+*PrinterType: PAGE
+*MaxCopies: 99
+*Personality: "PL80E TSPL raster"
+*%
+*% Configuration only. Rendering is performed by PL80EClean.dll, not Unidrv.
+*% No commands in this GPD are sent to the printer.
+*Command: CmdSendBlockData: ""
+*Feature: Orientation
+{
+    *rcNameID: =ORIENTATION_DISPLAY
+    *DefaultOption: PORTRAIT
+    *Option: PORTRAIT { *rcNameID: =PORTRAIT_DISPLAY }
+    *Option: LANDSCAPE_CC90 { *rcNameID: =LANDSCAPE_DISPLAY }
+}
+*Feature: Resolution
+{
+    *rcNameID: =RESOLUTION_DISPLAY
+    *DefaultOption: Native203
+    *Option: Native203
+    {
+        *Name: "203 x 203 dpi"
+        *DPI: PAIR(203,203)
+        *TextDPI: PAIR(203,203)
+        *SpotDiameter: 100
+    }
+}
+*Feature: PaperSize
+{
+    *rcNameID: =PAPER_SIZE_DISPLAY
+    *DefaultOption: Label100x150
+    *Option: Label100x150
+    {
+        *Name: "Label 100 x 150 mm"
+        *PageDimensions: PAIR(7992,11988)
+        *PrintableArea: PAIR(7992,11988)
+        *PrintableOrigin: PAIR(0,0)
+        *CursorOrigin: PAIR(0,0)
+        *Command: CmdSelect
+        {
+            *Order: DOC_SETUP.10
+            *Cmd: ""
+        }
+    }
+    *Option: CUSTOMSIZE
+    {
+        *rcNameID: =USER_DEFINED_SIZE_DISPLAY
+        *MinSize: PAIR(1599,800)
+        *MaxSize: PAIR(7992,23976)
+        *MaxPrintableWidth: 7992
+        *MinLeftMargin: 0
+        *TopMargin: 0
+        *BottomMargin: 0
+        *CenterPrintable?: FALSE
+        *CursorOrigin: PAIR(0,0)
+        *Command: CmdSelect
+        {
+            *Order: DOC_SETUP.10
+            *Cmd: ""
+        }
+    }
+}
+*Feature: InputBin
+{
+    *rcNameID: =PAPER_SOURCE_DISPLAY
+    *ConcealFromUI?: TRUE
+    *DefaultOption: UPPER
+    *Option: UPPER { *Name: "Label roll" }
+}
+*Feature: ColorMode
+{
+    *rcNameID: =COLOR_PRINTING_MODE_DISPLAY
+    *ConcealFromUI?: TRUE
+    *DefaultOption: Mono
+    *Option: Mono
+    {
+        *rcNameID: =MONO_DISPLAY
+        *Color?: FALSE
+        *DevNumOfPlanes: 1
+        *DevBPP: 1
+        *DrvBPP: 1
+    }
+}

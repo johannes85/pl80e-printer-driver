@@ -1,0 +1,77 @@
+// Microsoft printer versioning convention: first WORD reserved, second WORD
+// is the user-mode major driver version 3. Product version is independent.
+#include "version.h"
+#include "branding.h"
+1 VERSIONINFO
+ FILEVERSION CLEAN_FILE_VERSION
+ PRODUCTVERSION CLEAN_PRODUCT_VERSION
+ FILEFLAGSMASK 0x3f
+ FILEFLAGS 0
+ FILEOS 0x00040004
+ FILETYPE 0x00000003
+ FILESUBTYPE 0x0000000c
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName", "PL80E Open Source Project\0"
+            VALUE "FileDescription", "PL80E Open Source user-mode raster printer driver\0"
+            VALUE "FileVersion", CLEAN_FILE_VERSION_TEXT "\0"
+            VALUE "InternalName", CLEAN_INTERNAL_NAME "\0"
+            VALUE "OriginalFilename", CLEAN_FILENAME "\0"
+            VALUE "ProductName", CLEAN_NAME "\0"
+            VALUE "ProductVersion", CLEAN_VERSION_TEXT "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0409, 1200
+    END
+END
+
+201 DIALOGEX 0,0,260,130
+STYLE 0x50000440
+FONT 9,"Segoe UI"
+BEGIN
+    LTEXT CLEAN_NAME,-1,12,15,235,15
+    LTEXT "Resolution: 203 dpi",-1,12,40,235,15
+    LTEXT "Thermal label printer",-1,12,65,235,15
+    LTEXT "Configure label size, copies, density, speed and media on the Label tab in Printing Preferences.",-1,12,90,235,30
+END
+
+200 DIALOGEX 0,0,320,253
+STYLE 0x50000440
+FONT 9,"Segoe UI"
+BEGIN
+    LTEXT "Label width (mm):",-1,12,15,115,12
+    EDITTEXT 101,140,12,70,15,0x50810000
+    LTEXT "Label height (mm):",-1,12,42,115,12
+    EDITTEXT 102,140,39,70,15,0x50810000
+    LTEXT "Copies:",-1,12,69,115,12
+    EDITTEXT 103,140,66,70,15,0x50812000
+    CONTROL "Portrait",104,"Button",0x50010009,12,96,95,15
+    CONTROL "Landscape",105,"Button",0x50010009,120,96,95,15
+    LTEXT "Print speed:",-1,12,122,115,12
+    COMBOBOX 106,140,119,108,90,0x50210003
+    LTEXT "Density:",-1,12,149,115,12
+    COMBOBOX 107,140,146,108,150,0x50210003
+    LTEXT "Media:",-1,12,176,115,12
+    COMBOBOX 108,140,173,170,90,0x50210003
+    LTEXT "Gap / black mark (mm):",-1,12,203,125,12
+    EDITTEXT 109,140,200,70,15,0x50810000
+    PUSHBUTTON "Restore defaults",110,210,228,100,18
+END
+
+202 DIALOGEX 0,0,320,253
+STYLE 0x50000440
+FONT 9,"Segoe UI"
+BEGIN
+    LTEXT CLEAN_NAME,-1,12,16,290,18
+    LTEXT "Driver version:",-1,12,49,95,12
+    LTEXT CLEAN_VERSION_TEXT,120,115,49,190,12
+    LTEXT "Author:",-1,12,79,95,12
+    LTEXT "Johannes Zinnau with ChatGPT",121,115,79,190,12
+    LTEXT "GitHub project page:",-1,12,109,290,12
+    LTEXT "https://github.com/johannes85/pl80e-printer-driver",122,12,129,295,24
+END
