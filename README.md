@@ -64,6 +64,8 @@ After changing the source, repeat this step; the tools do not need downloading a
 | --- | --- |
 | Release installer package | `dist/PL80E-Open-Source-<version>.zip` |
 | Unpacked release package | `dist/PL80E-Open-Source/` |
+| Compact installer package | `dist/PL80E-Open-Source-<version>-compact.zip` |
+| Unpacked compact package | `dist/PL80E-Open-Source-Compact/` |
 | Development build | `dist/PL80E-Open-Source-DEV/` |
 
 The release ZIP contains the driver, **PL80ESetup.exe**, README and license
@@ -75,7 +77,9 @@ The WinForms application includes .NET 10, so no separate runtime is needed.
 Setup source is in `setup/`. To build only the setup EXE, run `Build-Setup.ps1`.
 For a smaller variant requiring the .NET 10 Windows Desktop Runtime, use
 `Build-Setup.ps1 -FrameworkDependent -OutputDirectory build/setup-framework-dependent`.
-The normal release includes the runtime.
+Build.ps1 automatically creates both release ZIPs. The normal release includes
+the runtime; the compact package requires the .NET 10 Windows Desktop Runtime (x64)
+on the target PC. Its README includes the download link.
 
 The development driver uses **PL80E Open Source (DEV)** and separate driver files,
 so it can coexist with the release. Build.ps1 does not sign it. For local DEV
@@ -87,8 +91,8 @@ signing, run:
 
 This creates the signed DEV package and a local development identity. It does
 not install the driver or trust the certificate. Keep `build/signing/` private.
-The installation scripts in the repository root target DEV; the scripts inside
-the release ZIP target the release.
+The installation scripts in the repository root target DEV; release packages
+use the setup EXE.
 
 ## Notes
 

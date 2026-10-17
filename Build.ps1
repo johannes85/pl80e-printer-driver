@@ -71,8 +71,28 @@ $inf2cat=Get-ChildItem -LiteralPath (Join-Path $PSScriptRoot 'tools\microsoft.wi
 if(-not $inf2cat) {throw 'Inf2Cat build tool is missing.'}
 & $inf2cat ("/driver:"+$release) /os:10_X64
 if($LASTEXITCODE -ne 0) {throw 'Release catalog generation failed.'}
-Compress-Archive -Path (Join-Path $release '*') -DestinationPath (Join-Path $PSScriptRoot 'dist\PL80E-Open-Source-0.1.0.17.zip') -Force
+$versionLine=Get-Content -LiteralPath (Join-Path $PSScriptRoot 'src\version.h') | Where-Object {$_ -match '^#define CLEAN_VERSION_TEXT '}
+if($versionLine -notmatch '"([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)"') {throw 'Cannot determine package version.'}
+$version=$Matches[1]
+Compress-Archive -Path (Join-Path $release '*') -DestinationPath (Join-Path $PSScriptRoot ("dist\PL80E-Open-Source-$version.zip")) -Force
 Write-Host "Release package: $release"
+
+# Compact installer uses the same driver payload with a separately installed runtime.
+$compact=Join-Path $PSScriptRoot 'dist\PL80E-Open-Source-Compact'
+New-Item -ItemType Directory -Path $compact -Force | Out-Null
+$compactFiles=@('PL80EClean.dll','PL80EClean.gpd','PL80EClean.inf','PL80EClean.cat','PL80ESetup.exe','README.md','LICENSE','DOTNET_LICENSE.txt','DOTNET_NOTICES.txt')
+if(Get-ChildItem -LiteralPath $compact -Force | Where-Object {$_.PSIsContainer -or $_.Name -notin $compactFiles}) {
+    throw 'Unexpected files in compact directory; use a clean compact directory.'
+}
+$compactSetup=Join-Path $build 'setup-compact'
+& (Join-Path $PSScriptRoot 'Build-Setup.ps1') -FrameworkDependent -OutputDirectory $compactSetup
+foreach($name in $compactFiles | Where-Object {$_ -notin @('PL80ESetup.exe','README.md')}) {
+    Copy-Item -LiteralPath (Join-Path $release $name) -Destination $compact -Force
+}
+Copy-Item -LiteralPath (Join-Path $compactSetup 'PL80ESetup.exe') -Destination $compact -Force
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'package\README_COMPACT.md') -Destination (Join-Path $compact 'README.md') -Force
+Compress-Archive -Path (Join-Path $compact '*') -DestinationPath (Join-Path $PSScriptRoot ("dist\PL80E-Open-Source-$version-compact.zip")) -Force
+Write-Host "Compact package: $compact"
 
 # Independent DEV identity, including spool-directory filenames and hardware ID.
 $dev=Join-Path $PSScriptRoot 'dist\PL80E-Open-Source-DEV'
