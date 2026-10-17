@@ -43,16 +43,24 @@ Get-ChildItem -LiteralPath $package -File | Where-Object Name -ne 'SHA256.json' 
 # separate and may contain debug files and results from local signing tests.
 $release=Join-Path $PSScriptRoot 'dist\PL80E-Open-Source'
 New-Item -ItemType Directory -Path $release -Force | Out-Null
-$allowed=@('PL80EClean.dll','PL80EClean.gpd','PL80EClean.inf','PL80EClean.cat','Install.ps1','Uninstall.ps1','README.md','LICENSE')
+$allowed=@('PL80EClean.dll','PL80EClean.gpd','PL80EClean.inf','PL80EClean.cat','PL80ESetup.exe','Install.ps1','Uninstall.ps1','README.md','LICENSE','DOTNET_LICENSE.txt','DOTNET_NOTICES.txt')
 if(Get-ChildItem -LiteralPath $release -Force | Where-Object {$_.PSIsContainer -or $_.Name -notin $allowed}) {
     throw 'Unexpected files in release directory; use a clean release directory.'
 }
 foreach($name in @('PL80EClean.dll','PL80EClean.gpd','PL80EClean.inf')) {
     Copy-Item -LiteralPath (Join-Path $package $name) -Destination $release -Force
 }
-foreach($name in @('Install.ps1','Uninstall.ps1','README.md')) {
+foreach($name in @('Install.ps1','Uninstall.ps1')) {
+    $oldScript=Join-Path $release $name
+    if(Test-Path -LiteralPath $oldScript) {Remove-Item -LiteralPath $oldScript}
+}
+foreach($name in @('README.md')) {
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot ('package\'+$name)) -Destination $release -Force
 }
+& (Join-Path $PSScriptRoot 'Build-Setup.ps1')
+Copy-Item -LiteralPath (Join-Path $build 'setup-publish\PL80ESetup.exe') -Destination $release -Force
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'tools\dotnet\LICENSE.txt') -Destination (Join-Path $release 'DOTNET_LICENSE.txt') -Force
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'tools\dotnet\ThirdPartyNotices.txt') -Destination (Join-Path $release 'DOTNET_NOTICES.txt') -Force
 foreach($name in @('LICENSE')) {
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot $name) -Destination $release -Force
 }

@@ -9,7 +9,7 @@ which it did successfully thanks to [REA](https://rea.tools/).
 I didn't review the code in depth, but the driver itself seems to work - at least for my usecase
 which is the printing of shipping labels.
 
-The provided release version isn't officially signed but can be installed with the provided install script,
+The provided release version isn't officially signed but can be installed with the provided setup application,
 which self signes it for the current machine it is installed on.
 
 Author: Johannes Zinnau and (mostly) ChatGPT  
@@ -21,7 +21,7 @@ Project Page: https://github.com/johannes85/pl80e-printer-driver
 - Internet access for the first download of the build tools.
 - The complete project source folder.
 
-You do not need to install Visual Studio, Zig or the Windows SDK manually.
+You do not need to install Visual Studio, Zig, .NET or the Windows SDK manually.
 Building does not require administrator privileges or a connected printer.
 
 ## 1. Open the project folder
@@ -43,8 +43,10 @@ Run this once:
 .\Prepare-BuildTools.ps1
 ```
 
-This downloads Zig 0.13.0, the required MinGW-w64 headers, and Microsoft SDK/WDK
-build tools into `tools/`.
+This downloads Zig 0.13.0, the required MinGW-w64 headers, Microsoft SDK/WDK
+build tools and the portable .NET 10 SDK into `tools/`. The first setup publish
+also restores Windows runtime packs. If you already prepared the native tools,
+run `Prepare-SetupTools.ps1` once to add the .NET SDK.
 
 ## 3. Build the driver
 
@@ -64,9 +66,16 @@ After changing the source, repeat this step; the tools do not need downloading a
 | Unpacked release package | `dist/PL80E-Open-Source/` |
 | Development build | `dist/PL80E-Open-Source-DEV/` |
 
-The release ZIP contains the driver, installer, uninstaller, README and license
-notices. Extract it and follow its README to install as administrator. Its
-installer creates a local signing certificate and signs the catalog on the target PC.
+The release ZIP contains the driver, **PL80ESetup.exe**, README and license
+notices. Extract it, open PL80ESetup.exe and choose a USB port, then click
+**Install / update**. The same GUI uninstalls the release. It creates a local
+signing certificate and signs the catalog on the target PC, without PowerShell.
+The WinForms application includes .NET 10, so no separate runtime is needed.
+
+Setup source is in `setup/`. To build only the setup EXE, run `Build-Setup.ps1`.
+For a smaller variant requiring the .NET 10 Windows Desktop Runtime, use
+`Build-Setup.ps1 -FrameworkDependent -OutputDirectory build/setup-framework-dependent`.
+The normal release includes the runtime.
 
 The development driver uses **PL80E Open Source (DEV)** and separate driver files,
 so it can coexist with the release. Build.ps1 does not sign it. For local DEV

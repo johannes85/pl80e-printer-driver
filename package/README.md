@@ -9,7 +9,7 @@ which it did successfully.
 I din't review the code in depth, but the driver itself seems to work - at least for my usecase
 which is the printing of shipping labels.
 
-The provided release version isn't officially signed but can be installed with the provided install script,
+The provided release version isn't officially signed but can be installed with the provided setup application,
 which self signes it for the current machine it is installed on.
 
 Project code and scripts are available under the MIT license; see LICENSE.
@@ -19,21 +19,15 @@ Project Page: https://github.com/johannes85/pl80e-printer-driver
 
 ## Install
 
-Extract the entire ZIP to a local folder. Open **64-bit Windows PowerShell as administrator**, change to that folder and run:
+1. Extract the entire ZIP to a local folder.
+2. Connect and power on the printer.
+3. Double-click **PL80ESetup.exe** and approve the Windows administrator prompt.
+4. Select the correct USB port. **PL80E Open Source Driver installed** indicates that the driver already has a queue on that port; use **Uninstall** to remove it. Click **Refresh ports** if needed.
+5. Click **Install / update** and wait for the success message.
 
-```powershell
-.\Install.ps1
-```
+The printer queue is **PL80E Open Source**. The original **PL80E** installation remains unchanged. Installation does not print a page or change the default printer. Rerun the new setup application to update. Uninstall first if you need to change an existing queue's port.
 
-The default queue is **PL80E Open Source**, using **USB001**. To use another existing printer port:
-
-```powershell
-.\Install.ps1 -PortName USB002
-```
-
-Find the correct port under the original printer's **Printer properties → Ports**. The original **PL80E** queue is retained. Installation does not print a page or change the default printer. Rerun Install.ps1 from a newer package to update this installation.
-
-If Windows blocks the downloaded scripts, verify the source, unblock the ZIP in its file Properties and extract it again. Organization policies may require your administrator to approve scripts or locally signed drivers.
+The setup EXE itself is not signed with a publicly trusted publisher certificate. Verify the download source. Organization policies may require your administrator to approve locally signed drivers.
 
 ## Settings
 
@@ -43,18 +37,16 @@ Restart printing applications after an update; Firefox can keep the previous dri
 
 ## Local signing
 
-Install.ps1 creates a dedicated **non-exportable, five-year code-signing certificate** on this PC, signs the supplied driver catalog and adds that certificate to the machine's **Trusted Root Certification Authorities** and **Trusted Publishers** stores. This trusts other code signed with the same key as well. The private key is never included in this ZIP.
+Setup creates a dedicated **non-exportable, five-year code-signing certificate** on this PC, signs the supplied driver catalog and adds that certificate to the machine's **Trusted Root Certification Authorities** and **Trusted Publishers** stores. This trusts other code signed with the same key as well. The private key is never included in this ZIP.
 
-This is a locally trusted driver, **not Microsoft/WHQL certified**. Signatures have no timestamp; renew or replace the installation before the certificate expires. Install.ps1 reports its expiry date. Secure Boot and Windows signature enforcement are not disabled. Installation state and the signed copy are kept in `%ProgramData%\PL80E Open Source`.
+This is a locally trusted driver, **not Microsoft/WHQL certified**. Signatures have no timestamp; renew or replace the installation before the certificate expires. Setup reports its expiry date. Secure Boot and Windows signature enforcement are not disabled. Installation state and the signed copy are kept in `%ProgramData%\PL80E Open Source`.
 
 ## Uninstall
 
-Close printing applications and finish or cancel queued jobs, then run in an administrator PowerShell:
+Close printing applications and finish or cancel queued jobs. Open **PL80ESetup.exe**, click **Uninstall** and confirm.
 
-```powershell
-.\Uninstall.ps1
-```
+Setup removes its recorded queues, the driver, its Driver Store packages and this installer's certificate/private key. It stops if other queues or Windows still use the driver. Resolve the reported issue and retry; a restart may be necessary. It does not remove the original PL80E driver.
 
-The script removes queues recorded by this installer, the registered driver, its Driver Store package and this installer's certificate/private key. It stops if other queues or Windows still use the driver. Resolve the reported issue and rerun it. It does not remove the original PL80E driver or older development certificates.
+The GUI recognizes installation state from the previous self-signing release scripts. It can also update or remove an older release registration without that state; signing certificates it does not own are retained. Keep the extracted setup files for later removal or updates.
 
-Use this Uninstall.ps1 for installations made with the matching self-signing Install.ps1. Earlier development installations have separate removal scripts.
+The bundled .NET runtime has separate license notices in DOTNET_LICENSE.txt and DOTNET_NOTICES.txt.

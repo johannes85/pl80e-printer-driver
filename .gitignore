@@ -5,6 +5,8 @@ build/
 dist/
 test-output/
 analysis/
+setup/bin/
+setup/obj/
 *.pfx
 *.p12
 *.key
