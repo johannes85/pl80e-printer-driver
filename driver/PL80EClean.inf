@@ -6,7 +6,7 @@ Class=Printer
 ClassGUID={4D36E979-E325-11CE-BFC1-08002BE10318}
 ClassVer=3.0
 Provider=%Provider%
-DriverVer=10/17/2026,0.1.0.18
+DriverVer=10/17/2026,0.1.0.19
 CatalogFile=PL80EClean.cat
 
 [Manufacturer]

@@ -21,7 +21,7 @@ Project Page: https://github.com/johannes85/pl80e-printer-driver
 - Internet access for the first download of the build tools.
 - The complete project source folder.
 
-You do not need to install Visual Studio, Zig, .NET or the Windows SDK manually.
+You do not need to install Visual Studio, Zig or the Windows SDK manually.
 Building does not require administrator privileges or a connected printer.
 
 ## 1. Open the project folder
@@ -43,10 +43,8 @@ Run this once:
 .\Prepare-BuildTools.ps1
 ```
 
-This downloads Zig 0.13.0, the required MinGW-w64 headers, Microsoft SDK/WDK
-build tools and the portable .NET 10 SDK into `tools/`. The first setup publish
-also restores Windows runtime packs. If you already prepared the native tools,
-run `Prepare-SetupTools.ps1` once to add the .NET SDK.
+This downloads Zig 0.13.0, the required MinGW-w64 headers and Microsoft SDK/WDK
+build tools into `tools/`. The driver and setup use the same C compiler.
 
 ## 3. Build the driver
 
@@ -64,22 +62,18 @@ After changing the source, repeat this step; the tools do not need downloading a
 | --- | --- |
 | Release installer package | `dist/PL80E-Open-Source-<version>.zip` |
 | Unpacked release package | `dist/PL80E-Open-Source/` |
-| Compact installer package | `dist/PL80E-Open-Source-<version>-compact.zip` |
-| Unpacked compact package | `dist/PL80E-Open-Source-Compact/` |
 | Development build | `dist/PL80E-Open-Source-DEV/` |
 
-The release ZIP contains the driver, **PL80ESetup.exe**, README and license
-notices. Extract it, open PL80ESetup.exe and choose a USB port, then click
-**Install / update**. The same GUI uninstalls the release. It creates a local
-signing certificate and signs the catalog on the target PC, without PowerShell.
-The WinForms application includes .NET 10, so no separate runtime is needed.
+The release ZIP contains the driver, **PL80ESetup.exe**, README and MIT license.
+Extract it, open PL80ESetup.exe and choose a USB port, then click
+**Install / update**. The same GUI uninstalls the driver. It creates a local
+signing certificate and signs the catalog on the target PC.
+
+Setup is a small native Windows application written in C. It uses Windows
+system libraries and does not need a separate runtime. There is one release
+package; a separate compact variant is no longer necessary.
 
 Setup source is in `setup/`. To build only the setup EXE, run `Build-Setup.ps1`.
-For a smaller variant requiring the .NET 10 Windows Desktop Runtime, use
-`Build-Setup.ps1 -FrameworkDependent -OutputDirectory build/setup-framework-dependent`.
-Build.ps1 automatically creates both release ZIPs. The normal release includes
-the runtime; the compact package requires the .NET 10 Windows Desktop Runtime (x64)
-on the target PC. Its README includes the download link.
 
 The development driver uses **PL80E Open Source (DEV)** and separate driver files,
 so it can coexist with the release. Build.ps1 does not sign it. For local DEV

@@ -48,5 +48,3 @@ Close printing applications and finish or cancel queued jobs. Open **PL80ESetup.
 Setup removes its recorded queues, the driver, its Driver Store packages and this installer's certificate/private key. It stops if other queues or Windows still use the driver. Resolve the reported issue and retry; a restart may be necessary. It does not remove the original PL80E driver.
 
 The GUI recognizes installation state from the previous self-signing release scripts. It can also update or remove an older release registration without that state; signing certificates it does not own are retained. Keep the extracted setup files for later removal or updates.
-
-The bundled .NET runtime has separate license notices in DOTNET_LICENSE.txt and DOTNET_NOTICES.txt.

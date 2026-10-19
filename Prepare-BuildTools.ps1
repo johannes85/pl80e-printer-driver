@@ -29,5 +29,4 @@ foreach ($id in $packages.Keys) {
     if ((Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash -ne $packages[$id]) { throw "Prüfsumme stimmt nicht: $id" }
     Expand-Archive -LiteralPath $archive -DestinationPath (Join-Path $toolRoot $id) -Force
 }
-& (Join-Path $PSScriptRoot 'Prepare-SetupTools.ps1')
 Write-Host 'Portable build tools prepared. Run Build.ps1 next.'

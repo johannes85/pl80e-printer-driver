@@ -50,17 +50,15 @@ if(Get-ChildItem -LiteralPath $release -Force | Where-Object {$_.PSIsContainer -
 foreach($name in @('PL80EClean.dll','PL80EClean.gpd','PL80EClean.inf')) {
     Copy-Item -LiteralPath (Join-Path $package $name) -Destination $release -Force
 }
-foreach($name in @('Install.ps1','Uninstall.ps1')) {
+foreach($name in @('Install.ps1','Uninstall.ps1','DOTNET_LICENSE.txt','DOTNET_NOTICES.txt')) {
     $oldScript=Join-Path $release $name
     if(Test-Path -LiteralPath $oldScript) {Remove-Item -LiteralPath $oldScript}
 }
 foreach($name in @('README.md')) {
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot ('package\'+$name)) -Destination $release -Force
 }
-& (Join-Path $PSScriptRoot 'Build-Setup.ps1')
+& (Join-Path $PSScriptRoot 'Build-Setup.ps1') -Zig $Zig
 Copy-Item -LiteralPath (Join-Path $build 'setup-publish\PL80ESetup.exe') -Destination $release -Force
-Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'tools\dotnet\LICENSE.txt') -Destination (Join-Path $release 'DOTNET_LICENSE.txt') -Force
-Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'tools\dotnet\ThirdPartyNotices.txt') -Destination (Join-Path $release 'DOTNET_NOTICES.txt') -Force
 foreach($name in @('LICENSE')) {
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot $name) -Destination $release -Force
 }
@@ -76,23 +74,6 @@ if($versionLine -notmatch '"([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)"') {throw 'Cannot d
 $version=$Matches[1]
 Compress-Archive -Path (Join-Path $release '*') -DestinationPath (Join-Path $PSScriptRoot ("dist\PL80E-Open-Source-$version.zip")) -Force
 Write-Host "Release package: $release"
-
-# Compact installer uses the same driver payload with a separately installed runtime.
-$compact=Join-Path $PSScriptRoot 'dist\PL80E-Open-Source-Compact'
-New-Item -ItemType Directory -Path $compact -Force | Out-Null
-$compactFiles=@('PL80EClean.dll','PL80EClean.gpd','PL80EClean.inf','PL80EClean.cat','PL80ESetup.exe','README.md','LICENSE','DOTNET_LICENSE.txt','DOTNET_NOTICES.txt')
-if(Get-ChildItem -LiteralPath $compact -Force | Where-Object {$_.PSIsContainer -or $_.Name -notin $compactFiles}) {
-    throw 'Unexpected files in compact directory; use a clean compact directory.'
-}
-$compactSetup=Join-Path $build 'setup-compact'
-& (Join-Path $PSScriptRoot 'Build-Setup.ps1') -FrameworkDependent -OutputDirectory $compactSetup
-foreach($name in $compactFiles | Where-Object {$_ -notin @('PL80ESetup.exe','README.md')}) {
-    Copy-Item -LiteralPath (Join-Path $release $name) -Destination $compact -Force
-}
-Copy-Item -LiteralPath (Join-Path $compactSetup 'PL80ESetup.exe') -Destination $compact -Force
-Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'package\README_COMPACT.md') -Destination (Join-Path $compact 'README.md') -Force
-Compress-Archive -Path (Join-Path $compact '*') -DestinationPath (Join-Path $PSScriptRoot ("dist\PL80E-Open-Source-$version-compact.zip")) -Force
-Write-Host "Compact package: $compact"
 
 # Independent DEV identity, including spool-directory filenames and hardware ID.
 $dev=Join-Path $PSScriptRoot 'dist\PL80E-Open-Source-DEV'

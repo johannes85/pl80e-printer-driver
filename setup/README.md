@@ -1,46 +1,43 @@
-# C# Windows Forms setup
+# Native Windows setup
 
-The release setup is a Windows x64, .NET 10 WinForms application. Build it with
-`Build-Setup.ps1`, or build the whole driver release with `Build.ps1`.
-The default publish is self-contained and single-file. Its approximately 50 MB
-EXE includes .NET and extracts native runtime libraries as required by .NET.
-It requires elevation through its Windows application manifest.
+The setup is written in C using the Windows API. `Build-Setup.ps1` builds it
+with the same portable Zig 0.13.0 compiler and resource compiler as the driver.
+It has no .NET dependency. `Build.ps1` includes the EXE in the release ZIP.
 
-Production setup does not run PowerShell. It uses the spooler and SetupAPI
-through P/Invoke, CNG/X509 certificate APIs, and the Windows Authenticode signer.
-Driver Store cleanup calls Windows' pnputil.exe with a validated `oemNN.inf`
-argument; it never uses `/force` or removes the separate DEV registration.
+`setup.c` contains the GUI, USB printer-port enumeration, bounded JSON state
+reader, certificate lifecycle and install/update/uninstall operations.
+`setup.rc` embeds version information and the administrator manifest.
+Operations run on a worker thread while the GUI displays progress.
 
-Main files:
+Setup uses the Windows spooler, SetupAPI, CNG, Crypt32 and Authenticode APIs.
+It generates a non-exportable machine RSA signing key and a five-year code
+signing certificate, signs the catalog and verifies trust before registration.
+It does not modify the driver DLL. Driver Store cleanup calls the system
+pnputil.exe with a validated oemNN.inf name, without /force.
 
-- `Program.cs`: GUI, USB selection, responsive operation log and self-tests.
-- `Installer.cs`: installation state, certificate lifecycle, install/update/remove.
-- `CatalogSigner.cs`: catalog signing and Windows trust validation.
-- `Native.cs`: native printing/SetupAPI declarations and bounded enumeration.
-
-The unsigned catalog produced by Build.ps1 covers the unchanged driver payload.
-The setup signs that catalog on the target computer; it does not change the DLL.
-Installation state is compatible with the former release PowerShell installer.
-Older release registrations without state can be adopted or removed, but their
-certificates are retained because they may be shared with a development driver.
+Installation state remains compatible with the previous C# and release-script
+format in `%ProgramData%\PL80E Open Source\installation.json`. Directories have
+protected administrator/SYSTEM ACLs. Removal validates queue, package and
+certificate identities. Certificates belonging to older registrations without
+state are retained. Unrelated printer drivers are preserved.
 
 ## Validation
 
-`--self-test <report.json> <disposable-catalog-copy>` runs native structure,
-enumeration, state compatibility, GUI rendering and catalog signing tests. It
-uses a temporary current-user signing key which is deleted afterwards. It does
-not install drivers or trust certificates. Invoke the build DLL through the
-portable dotnet host when elevation is not needed.
+`PL80ESetup.exe --self-test <report.txt>` checks USB enumeration, accepted port
+names, legacy state, malformed JSON and invalid package rejection. It does not
+install anything. It also validates existing installation state and saves a GUI
+snapshot as `<report.txt>.bmp`. The EXE requires elevation through its manifest.
 
-For integration testing only, build with `-p:IntegrationTest=true` into a separate
-output directory. That compile-time switch changes the driver, certificate and
-payload identities to `PL80E Open Source Setup Test`, permits the FILE port and
-adds `--integration-test <test-payload-folder> <result.txt>`. Test payload files
-are named PL80ESetupTest.dll/.inf/.gpd/.cat. The test checks installation, update,
-removal and preservation of unowned certificates. It requires elevation and
-must never be used as the release publish. Normal builds do not include that
-test command or permit FILE installation.
+For isolated integration testing, use:
 
-Tests for this migration passed using an isolated FILE test queue. The existing
-release and DEV driver hashes were checked before and after and were unchanged.
-No physical labels were printed by the tests.
+```powershell
+.\Build-Setup.ps1 -IntegrationTest -OutputDirectory build\setup-native-test
+```
+
+Only this test build accepts `--integration-test <payload-folder> <report.txt>`
+and the FILE: port. Its driver name, certificate subject, state directory and
+payload filenames are separate: `PL80E Open Source Setup Test` and
+`PL80ESetupTest.dll/.gpd/.inf/.cat`. Use a catalog generated for that identity.
+The elevated test checks install, update, signing-identity reuse, removal and
+preservation of an unowned certificate. It cleans up its own test installation.
+Normal builds do not include the integration command or permit FILE: installs.
